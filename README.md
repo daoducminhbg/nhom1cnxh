@@ -2,7 +2,7 @@
 
 # 🏛️ nhom1cnxh — Cổng Điều Hành & Bỏ Phiếu Vai Trò
 
-**Nền tảng quản lý nhiệm vụ học tập và phân công vai trò theo thời gian thực (Realtime) dành cho Nhóm 1 — Môn Chủ nghĩa Xã hội Khoa học (CNXHKH)**
+**Nền tảng quản trị nhiệm vụ học tập & phân công vai trò theo thời gian thực (Realtime) dành cho Nhóm 1 — Môn Chủ nghĩa Xã hội Khoa học (CNXHKH)**
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.2-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -10,6 +10,7 @@
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL_%26_Realtime-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-11.3-black?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 [![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Status](https://img.shields.io/badge/Status-Production_Ready-10b981?style=for-the-badge)](#)
 [![License](https://img.shields.io/badge/License-Internal_Use-E11D48?style=for-the-badge)](#bản-quyền--license)
 
 </div>
@@ -18,302 +19,153 @@
 
 ## 📖 Mục lục
 
-- [Giới thiệu](#-giới-thiệu)
-- [Tính năng nổi bật](#-tính-năng-nổi-bật)
-- [Tech Stack](#-tech-stack)
-- [Hướng dẫn cài đặt](#-hướng-dẫn-cài-đặt)
-  - [Bước 1: Cài đặt dependencies](#bước-1-cài-đặt-dependencies)
-  - [Bước 2: Tạo project Supabase & Khởi chạy Database](#bước-2-tạo-project-supabase--khởi-chạy-database)
-  - [Bước 3: Cấu hình biến môi trường](#bước-3-cấu-hình-biến-môi-trường)
-  - [Bước 4: Bật tính năng Realtime](#bước-4-bật-tính-năng-realtime)
-  - [Bước 5: Chạy ứng dụng](#bước-5-chạy-ứng-dụng)
-- [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
-- [Hướng dẫn sử dụng](#-hướng-dẫn-sử-dụng)
-  - [1. Đăng nhập & Xác thực PIN](#1-đăng-nhập--xác-thực-pin)
-  - [2. Trang Tổng quan (Dashboard)](#2-trang-tổng-quan-dashboard)
-  - [3. Bỏ phiếu vai trò (Voting Page)](#3-bỏ-phiếu-vai-trò-voting-page)
-  - [4. Bảng điều khiển Quản trị viên (Admin Panel)](#4-bảng-điều-khiển-quản-trị-viên-admin-panel)
-- [Danh sách thành viên cố định](#-danh-sách-thành-viên-cố-định)
-- [Hướng dẫn triển khai (Deployment)](#-hướng-dẫn-triển-khai-deployment)
-- [Hệ thống thiết kế (Design System)](#-hệ-thống-thiết-kế-design-system)
+- [Giới thiệu dự án](#-giới-thiệu-dự-án)
+- [Bối cảnh & Mục tiêu dài hạn](#-bối-cảnh--mục-tiêu-dài-hạn)
+- [Tính năng hệ thống](#-tính-năng-hệ-thống)
+  - [1. Cơ chế quản lý đa tuần (Multi-week Architecture)](#1-cơ-chế-quản-lý-đa-tuần-multi-week-architecture)
+  - [2. Đấu trường bỏ phiếu vai trò thời gian thực](#2-đấu-trường-bỏ-phiếu-vai-trò-thời-gian-thực)
+  - [3. Quyền hạn Quản trị viên (Nhóm trưởng)](#3-quyền-hạn-quản-trị-viên-nhóm-trưởng)
+  - [4. Đồng hồ đếm ngược Deadline từng giây](#4-đồng-hồ-đếm-ngược-deadline-từng-giây)
+  - [5. Hệ thống xác thực mã PIN bảo mật](#5-hệ-thống-xác-thực-mã-pin-bảo-mật)
+- [Danh sách 9 thành viên cố định](#-danh-sách-9-thành-viên-cố-định)
+- [Kiến trúc công nghệ (Tech Stack)](#-kiến-trúc-công-nghệ-tech-stack)
+- [Ngôn ngữ thiết kế & Trải nghiệm thị giác](#-ngôn-ngữ-thiết-kế--trải-nghiệm-thị-giác)
 - [Bản quyền & License](#-bản-quyền--license)
 
 ---
 
-## 🌟 Giới thiệu
+## 🌟 Giới thiệu dự án
 
-**nhom1cnxh** là ứng dụng web nội bộ được phát triển chuyên biệt phục vụ công tác điều phối, quản trị bài tập và bỏ phiếu chọn vai trò (role assignment) cho **Nhóm 1 môn học Chủ nghĩa Xã hội Khoa học**.
+**nhom1cnxh** là Cổng thông tin điều hành và phân công vai trò trực tuyến thời gian thực (Role Voting & Management Portal) được phát triển riêng biệt cho **Nhóm 1 gồm 9 sinh viên Công nghệ thông tin theo học học phần Chủ nghĩa Xã hội Khoa học**.
 
-Hệ thống giải quyết bài toán phân chia công việc minh bạch, công bằng và tức thì, loại bỏ hoàn toàn tình trạng trùng vai, thiếu người hoặc tranh chấp vai trò qua tin nhắn thông thường.
-
-### Điểm nhấn chính:
-- **Cập nhật thời gian thực (Realtime):** Mọi thao tác chọn vai, rút lui, đổi vai hoặc khóa biểu quyết của Admin được đồng bộ ngay tức khắc tới toàn bộ thành viên mà không cần tải lại trang.
-- **Hỗ trợ đa tuần (Multi-week Missions):** Quản lý linh hoạt các chặng học tập theo từng tuần với mục tiêu, mô tả, yêu cầu sản phẩm và thời hạn deadline riêng biệt.
-- **Bảo mật nội bộ 9 thành viên:** Danh sách 9 thành viên được định danh cố định trong cơ sở dữ liệu. Xác thực tài khoản bằng **mã PIN 4–6 chữ số** tự tạo trong lần đăng nhập đầu tiên, loại bỏ việc đăng ký bừa bãi từ người ngoài.
+Hệ thống số hóa toàn diện quy trình giao nhận bài tập nhóm, giải quyết triệt để vấn đề phân chia công việc:
+- **Minh bạch & Công bằng:** Bỏ phiếu giành vai trò công khai, slot hiển thị trực quan theo thời gian thực.
+- **Tức thì (Realtime 100%):** Khi một thành viên trên điện thoại bấm nhận vai trò, màn hình máy tính của tất cả thành viên còn lại lập tức nhảy số và hiện tên người nhận mà không cần tải lại trang (F5).
+- **Trải nghiệm đẳng cấp:** Phong cách Cyber-Academic viễn tưởng kết hợp Dark Mode cao cấp với sắc đỏ son Ruby (`#E11D48`) và vàng hoàng gia (`#F59E0B`).
 
 ---
 
-## ⚡ Tính năng nổi bật
+## 🎯 Bối cảnh & Mục tiêu dài hạn
 
-- 🔐 **Xác thực mã PIN an toàn:** Không cần mật khẩu rườm rà hay email phức tạp. Thành viên chọn tên mình và nhập mã PIN để xác thực phiên làm việc.
-- ⏱️ **Đồng hồ đếm ngược Realtime:** Đếm ngược từng giây đến hạn chót (Deadline) của từng nhiệm vụ, tự động cảnh báo khi sắp hết hạn.
-- 🗳️ **Bỏ phiếu tương tác linh hoạt:** 
-  - Hiển thị trực quan số lượng vị trí tối đa (`max_slots`) của từng vai trò.
-  - Hiển thị avatar cùng tên của các thành viên đang giữ slot.
-  - Cho phép thành viên tự do đổi ý, rút khỏi vai trò hoặc chuyển sang vai trò khác bất cứ khi nào (khi phiên vote đang mở).
-  - Tự động khóa nút chọn khi vai trò đã đủ chỉ tiêu.
-- 📊 **Thanh đo tiến độ trực quan (Vote Progress):** Thống kê số lượng thành viên đã hoàn thành chọn vai trên tổng số 9 người theo thời gian thực.
-- 👑 **Bảng điều khiển Quản trị viên toàn năng (Admin Drawer):** Dành riêng cho Trưởng nhóm (**Đào Đức Minh**):
-  - Tạo mới, kích hoạt hoặc chỉnh sửa nhiệm vụ các tuần tiếp theo.
-  - Thiết lập danh mục vai trò, số lượng slot và thứ tự ưu tiên.
-  - Bật/tắt trạng thái mở cổng bình chọn (`is_voting_open`).
-  - Điều phối nhanh: Gán trực tiếp hoặc di dời thành viên giữa các vai trò khi có phân công đặc biệt.
-  - Reset lại toàn bộ lượt bình chọn của tuần khi cần tổ chức bầu lại.
+- **Vòng đời sử dụng:** Website không phải là giải pháp dùng 1 lần, mà được **sử dụng xuyên suốt cả học kỳ** qua nhiều tuần học và nhiệm vụ khác nhau (Nhiệm vụ tuần 4, tuần 5, tuần 6... cho đến khi kết thúc môn học).
+- **Chu trình vận hành hàng tuần:**
+  1. Giảng viên công bố chủ đề và bài tập mới.
+  2. Nhóm trưởng (Admin) khởi tạo nhiệm vụ tuần, đặt mục tiêu, mô tả sản phẩm cần bàn giao, ấn định thời hạn nộp (Deadline) và thiết lập cơ cấu các vai trò.
+  3. 8 thành viên đăng nhập bằng mã PIN cá nhân để tham gia biểu quyết chọn vai trò phù hợp nhất với năng lực.
+  4. Sau khi hoàn thành tuần học, dữ liệu được tự động lưu trữ (Archive) và mở ra tuần mới tinh.
 
 ---
 
-## 🛠️ Tech Stack
+## ⚡ Tính năng hệ thống
 
-| Công nghệ | Phiên bản | Mục đích sử dụng |
+### 1. Cơ chế quản lý đa tuần (Multi-week Architecture)
+- **Bộ chuyển tuần linh hoạt (Mission Selector):** Cho phép xem lại lịch sử các tuần cũ và tuần đang hoạt động (Active Week).
+- **Lưu trữ nhiệm vụ (Archive):** Dữ liệu phân công và kết quả vote của tuần cũ được đóng băng và lưu trữ an toàn trong cơ sở dữ liệu.
+- **Khởi tạo tuần mới tức thì:** Nhóm trưởng có thể mở nhiệm vụ tuần tiếp theo với tiêu đề, tóm tắt yêu cầu, hạn chót deadline và bộ vai trò hoàn toàn mới.
+
+### 2. Đấu trường bỏ phiếu vai trò thời gian thực
+- **Bento Grid trực quan:** Mỗi vai trò được thiết kế dạng thẻ công nghệ cao (Role Card) hiển thị:
+  - Tên vai trò (MC Điều phối, Kịch bản & Câu hỏi, Kỹ thuật Game, Thiết kế Slide, Nghiên cứu nội dung...).
+  - Mô tả chi tiết trách nhiệm và sản phẩm cụ thể cần bàn giao (DoD - Definition of Done).
+  - Slot trực quan: Vòng tròn đại diện hiển thị Avatar định danh + Tên ngắn của những bạn đã xí chỗ (`[Đức Minh] [Trống] (1/2)`).
+- **Quy tắc phân công công bằng:**
+  - Mỗi thành viên chỉ được nhận **1 vai trò duy nhất** trong tuần đang mở.
+  - Tự động khóa nút đăng ký (`Disabled`) kèm nhãn **"ĐÃ ĐỦ NGƯỜI"** khi số lượng đăng ký đạt mức tối đa (`current_slots == max_slots`).
+  - Thành viên có quyền tự do đổi ý: Chuyển sang vai trò còn chỗ trống khác bất kỳ lúc nào trước khi hết hạn hoặc trước khi đóng cổng vote.
+- **Thanh đo tiến độ nhận việc (Vote Progress):**
+  - Tỷ lệ hoàn thành trực quan đếm chuẩn xác trên **8 thành viên** (ví dụ: `8/8 ĐÃ NHẬN VIỆC`).
+  - Thanh đo hiệu ứng Shimmer phát sáng chuyển màu gradient từ đỏ sang vàng.
+  - Hàng avatar thành viên đã đăng ký với hiệu ứng động mượt mà.
+
+### 3. Quyền hạn Quản trị viên (Nhóm trưởng)
+*Dành riêng và duy nhất cho Trưởng nhóm: **Đào Đức Minh** (`user_1`)*
+
+- 👑 **Miễn trừ bình chọn:** Tài khoản Nhóm trưởng giữ vai trò điều phối tối cao, không cần tham gia vote chiếm slot của nhóm.
+- ✏️ **Chỉnh sửa chi tiết vai trò trực tiếp (Inline Editing):**
+  - Bấm nút **"Sửa"** ngay trên từng thẻ vai trò để chỉnh sửa tức thì Tên vai trò, Mô tả công việc, Số lượng slot (`max_slots`).
+  - Lưu trực tiếp vào Database trong nền mà **không làm tải lại trang hay gián đoạn giao diện**.
+- 🖐️ **Kéo thả 2D sắp xếp thứ tự vai trò (Native 2D Drag & Drop):**
+  - Giữ chuột vào biểu tượng `⋮⋮` trên bất kỳ thẻ nào để kéo thả đổi vị trí trực tiếp trong lưới 2 chiều.
+  - Thẻ bám dính theo chuột mượt mà, thẻ đích tự động bật viền đỏ Neon Ruby báo hiệu vị trí thả.
+  - Tích hợp 2 nút mũi tên **`◀`** và **`▶`** để hoán đổi vị trí nhanh chỉ với 1 cú click hoặc chạm tay trên điện thoại.
+  - Thứ tự mới (`order_index`) được lưu duy nhất 1 lần khi thả chuột (onDrop).
+- 🔄 **Điều phối nhân sự tối cao (Override):**
+  - Rê chuột vào avatar của thành viên trong ô slot để bấm nút **`✕`** hủy vai trò nếu bạn đó vote nhầm.
+  - Chọn bất kỳ thành viên nào trong nhóm để chuyển họ sang một vai trò chỉ định trong bảng điều khiển.
+- 🔒 **Đóng / Mở cổng bình chọn:** Khóa hoặc mở quyền nhận vai trò bất cứ lúc nào chỉ với 1 click.
+- ⚠️ **Reset biểu quyết:** Xóa toàn bộ phiếu bầu của nhiệm vụ tuần hiện tại khi cần tổ chức phân công lại.
+
+### 4. Đồng hồ đếm ngược Deadline từng giây
+- **Công nghệ Number Ticker độc lập:**
+  - Tách biệt từng chữ số hàng chục và hàng đơn vị thành các ô định vị đồng tâm (`absolute inset-0`).
+  - Số giây nhảy mượt mà từng giây mà chữ số hàng chục không bị rung lắc hay đè lồng nét chữ lên nhau.
+- **Cảnh báo hạn chót:** Đếm ngược chính xác đến từng giây (Ngày : Giờ : Phút : Giây) và tự động kích hoạt trạng thái **"HẾT HẠN"** viền đỏ neon khi chạm mốc thời gian quy định.
+
+### 5. Hệ thống xác thực mã PIN bảo mật
+- **Không cần email rườm rà:** Hệ thống định danh đúng 9 thành viên nội bộ.
+- **Khởi tạo lần đầu:** Thành viên chọn tên mình, hệ thống nhận diện và yêu cầu tạo mã PIN cá nhân (4–6 số).
+- **Đăng nhập những lần sau:** Nhập đúng mã PIN để mở khóa phiên làm việc.
+- **Quản lý phiên:** Tự động lưu session trên trình duyệt, hỗ trợ nút chuyển đổi tài khoản linh hoạt.
+
+---
+
+## 👥 Danh sách 9 thành viên cố định
+
+Hệ thống được cấu hình khép kín dành riêng cho 9 thành viên Nhóm 1, không cho phép người ngoài đăng ký:
+
+| Mã ID | Họ và tên đầy đủ | Tên hiển thị ngắn | Vai trò trong hệ thống | Quyền hạn |
+| :---: | :--- | :---: | :--- | :---: |
+| `user_1` | **Đào Đức Minh** | **Đức Minh** | 👑 Nhóm trưởng / Điều hành chính | **Admin (Tối cao)** |
+| `user_2` | **Trần Hải Đăng** | **Hải Đăng** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_3` | **Nguyễn Văn Nam** | **Văn Nam** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_4` | **Bùi Minh Lâm** | **Minh Lâm** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_5` | **Nguyễn Viết Ngọc Duy** | **Ngọc Duy** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_6` | **Trần Viết Cường** | **Viết Cường** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_7` | **Lưu Thế An** | **Thế An** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_8` | **Đặng Quốc Khánh** | **Quốc Khánh** | 👤 Thành viên Nhóm 1 | Thành viên |
+| `user_9` | **Nguyễn Đức Anh** | **Đức Anh** | 👤 Thành viên Nhóm 1 | Thành viên |
+
+*Quy tắc hiển thị: Tên gọi ngắn gọn được hiển thị trên thẻ và avatar, rê chuột (Tooltip) sẽ hiển thị đầy đủ Họ và tên.*
+
+---
+
+## 🛠️ Kiến trúc công nghệ (Tech Stack)
+
+| Lớp kiến trúc | Công nghệ | Chi tiết ứng dụng |
 | :--- | :--- | :--- |
-| **Next.js** | `14.2.5` | Framework React hiện đại với App Router, tối ưu hóa Server Components và Client Interactivity |
-| **TypeScript** | `5.x` | Hệ thống Type-safe tĩnh toàn diện, đảm bảo độ tin cậy và hạn chế lỗi runtime |
-| **Tailwind CSS** | `3.4.6` | Tiện ích CSS thiết kế giao diện tối tân: Dark Cyberpunk & Glassmorphism |
-| **Supabase** | `2.45.0` | Nền tảng Backend-as-a-Service: Cơ sở dữ liệu PostgreSQL và WebSockets Realtime |
-| **Framer Motion** | `11.3.0` | Thư viện hoạt ảnh mượt mà cho hiệu ứng Drawer, Modal, Chuyển tab và Avatar badge |
-| **React Hot Toast** | `2.4.1` | Hệ thống thông báo toast pop-up sinh động, thẩm mỹ |
-| **React Icons** | `5.2.1` | Bộ icon đồ họa phong phú (HeroIcons, Lucide, FontAwesome) |
-| **Date-fns** | `3.6.0` | Xử lý và định dạng ngày giờ chuẩn xác theo múi giờ Việt Nam (GMT+7) |
+| **Frontend Framework** | **Next.js 14 (App Router)** | Kiến trúc React Server Components kết hợp Client Components tối ưu hiệu năng |
+| **Ngôn ngữ** | **TypeScript 5.x** | Kiểm soát kiểu dữ liệu tĩnh nghiêm ngặt (Type-safe), loại trừ lỗi runtime |
+| **Styling & Theme** | **Tailwind CSS 3.4** | Hệ thống utility-first tùy biến bảng màu Dark Mode, Glassmorphism, Neon glow |
+| **Cơ sở dữ liệu & Realtime** | **Supabase (PostgreSQL)** | Lưu trữ quan hệ, quản lý bảo mật Row Level Security (RLS) và WebSockets Realtime Channel |
+| **Animation Engine** | **Framer Motion 11.3** | Vật lý lò xo (Spring physics), Layout animations, Number ticker, Stagger list |
+| **Thông báo** | **React Hot Toast** | Hệ thống thông báo toast pop-up một lần (Single Instance, chống spam) |
+| **Icons** | **Lucide React** | Bộ icon vector tối giản, sắc sảo chuẩn công nghệ hiện đại |
+| **Nền tảng Cloud** | **Vercel** | Triển khai Edge Network toàn cầu với HTTPS tự động và CI/CD tức thì |
 
 ---
 
-## 🚀 Hướng dẫn cài đặt
+## 🎨 Ngôn ngữ thiết kế & Trải nghiệm thị giác
 
-Thực hiện lần lượt các bước sau để thiết lập môi trường phát triển cục bộ:
+Ứng dụng được thiết kế theo phong cách **Futuristic Cyber-Academic** độc đáo, kết hợp tinh thần học thuật cách mạng của môn học với ngôn ngữ thị giác công nghệ tương lai:
 
-### Bước 1: Cài đặt dependencies
+### Bảng màu nhận diện thương hiệu
+- **Onyx Space Background (`#07070D` - `#0A0A0F`):** Không gian đen huyền bí, tạo chiều sâu thị giác vô cực.
+- **Crimson / Ruby Red (`#E11D48`):** Sắc đỏ son rực rỡ, biểu tượng cho nhiệt huyết cách mạng và tinh thần xung kích của Nhóm 1.
+- **Imperial Gold (`#F59E0B`):** Vàng ánh kim sang trọng tượng trưng cho quyền năng Nhóm trưởng, hạn chót deadline và trạng thái đã xác nhận.
+- **Emerald Green (`#10B981`):** Xanh ngọc phát sáng báo hiệu vị trí còn trống và trạng thái hệ thống hoạt động ổn định.
 
-Mở terminal tại thư mục gốc của dự án (`e:\project code\web cnxh`) và chạy:
-
-```bash
-npm install
-```
-
-### Bước 2: Tạo project Supabase & Khởi chạy Database
-
-1. Truy cập [https://supabase.com](https://supabase.com) và đăng nhập hoặc đăng ký tài khoản.
-2. Chọn **"New Project"**, đặt tên dự án (ví dụ: `nhom1cnxh`) và mật khẩu cơ sở dữ liệu mạnh, chọn vùng gần nhất (ví dụ: `Singapore - ap-southeast-1`).
-3. Sau khi dự án khởi tạo xong, click vào biểu tượng **SQL Editor** ở thanh điều hướng bên trái.
-4. Mở file `schema.sql` có sẵn trong mã nguồn dự án, sao chép toàn bộ nội dung và dán vào SQL Editor của Supabase.
-5. Nhấn **Run** (hoặc `Ctrl + Enter`) để thực thi. Tập lệnh này sẽ tự động:
-   - Kích hoạt extension `uuid-ossp`.
-   - Tạo cấu trúc 4 bảng: `users`, `missions`, `roles`, `votes`.
-   - Thiết lập các chỉ mục (indexes) tối ưu hóa truy vấn.
-   - Nạp dữ liệu mẫu ban đầu: **9 thành viên cố định** và **Nhiệm vụ mẫu Tuần 4** (kèm 6 vai trò cụ thể).
-   - Thiết lập chính sách bảo mật Row Level Security (RLS).
-   - Thêm các bảng vào cơ chế xuất bản Realtime (`supabase_realtime`).
-6. Vào **Project Settings** > **API**, sao chép 2 thông số:
-   - **Project URL**
-   - **Project API keys** (khóa `anon` / `public`)
-
-### Bước 3: Cấu hình biến môi trường
-
-1. Tạo file `.env.local` tại thư mục gốc bằng cách sao chép từ `.env.local.example`:
-   ```bash
-   cp .env.local.example .env.local
-   ```
-2. Mở file `.env.local` và điền chính xác thông tin vừa lấy ở Bước 2:
-   ```env
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-actual-anon-key-here
-   ```
-
-### Bước 4: Bật tính năng Realtime
-
-Để tính năng bình chọn tức thì hoạt động trơn tru:
-1. Trong màn hình quản trị của Supabase Dashboard, điều hướng đến **Database** > **Replication**.
-2. Tìm mục **Source** (thường là bảng `supabase_realtime`).
-3. Đảm bảo công tắc Realtime đã được **BẬT (Enabled)** cho 3 bảng:
-   - `votes`
-   - `missions`
-   - `roles`
-*(Lưu ý: Script `schema.sql` đã tự động cấu hình lệnh này, bạn chỉ cần kiểm tra lại để xác nhận).*
-
-### Bước 5: Chạy ứng dụng
-
-Khởi chạy môi trường phát triển cục bộ:
-
-```bash
-npm run dev
-```
-
-Mở trình duyệt web và truy cập địa chỉ: [http://localhost:3000](http://localhost:3000)
-
----
-
-## 📁 Cấu trúc thư mục
-
-```
-web cnxh/
-├── .env.local.example        # Mẫu biến môi trường kết nối Supabase
-├── next.config.ts            # Cấu hình Next.js (TypeScript)
-├── package.json              # Khai báo thư viện và script npm
-├── postcss.config.js         # Cấu hình PostCSS cho Tailwind
-├── README.md                 # Tài liệu hướng dẫn toàn diện dự án
-├── schema.sql                # Toàn bộ mã nguồn DDL SQL và Seed data Supabase
-├── tailwind.config.ts        # Bảng màu chủ đạo, font và hiệu ứng giao diện
-├── tsconfig.json             # Cấu hình biên dịch TypeScript
-└── src/
-    ├── app/                  # Next.js App Router
-    │   ├── globals.css       # CSS toàn cục, style thanh cuộn, hiệu ứng kính mờ
-    │   ├── layout.tsx        # Root layout, tích hợp AuthProvider và Toast container
-    │   ├── page.tsx          # Trang Dashboard chính (Tổng quan nhiệm vụ & tiến độ)
-    │   ├── login/
-    │   │   └── page.tsx      # Trang đăng nhập thành viên & xác thực mã PIN
-    │   └── vote/
-    │       └── page.tsx      # Màn hình bỏ phiếu vai trò thời gian thực theo nhiệm vụ
-    ├── components/           # Các UI Component tái sử dụng
-    │   ├── AdminDrawer.tsx   # Panel điều hành của Quản trị viên (Admin controls)
-    │   ├── CountdownTimer.tsx # Bộ đếm ngược deadline thời gian thực với cảnh báo màu
-    │   ├── Header.tsx        # Thanh điều hướng trên cùng, hiển thị profile và actions
-    │   ├── MissionSelector.tsx # Hộp chọn tuần học và nhiệm vụ tương ứng
-    │   ├── RoleCard.tsx      # Thẻ hiển thị vai trò, số slot, avatar thành viên và nút vote
-    │   ├── UserAvatar.tsx    # Avatar định danh thành viên với màu gradient phong cách
-    │   └── VoteProgress.tsx  # Thanh phần trăm thể hiện tiến độ hoàn thành biểu quyết
-    ├── contexts/
-    │   └── AuthContext.tsx   # Context React lưu trữ và kiểm soát phiên làm việc người dùng
-    ├── hooks/
-    │   └── useRealtimeVotes.ts # Custom hook bắt sự kiện lắng nghe Postgres Realtime
-    └── lib/                  # Thư viện dùng chung
-        ├── constants.ts      # Danh sách 9 thành viên khởi tạo, màu sắc và hằng số hệ thống
-        ├── supabase.ts       # Đối tượng Supabase Client dùng chung
-        ├── types.ts          # Định nghĩa kiểu dữ liệu TypeScript (User, Mission, Role, Vote)
-        └── utils.ts          # Các hàm tiện ích hỗ trợ định dạng thời gian, chuỗi
-```
-
----
-
-## 💡 Hướng dẫn sử dụng
-
-### 1. Đăng nhập & Xác thực PIN
-1. Khi truy cập lần đầu, người dùng sẽ tự động được điều hướng đến trang `/login`.
-2. Chọn tên của bạn trong danh sách lưới **9 thành viên**.
-3. **Đăng nhập lần đầu:**
-   - Hệ thống phát hiện tài khoản chưa có mã bảo vệ và hiển thị giao diện **"Khởi tạo mã PIN bảo vệ"**.
-   - Nhập một mã số cá nhân (gồm **4 đến 6 chữ số**) và nhấn **"Lưu mã PIN & Đăng nhập"**.
-4. **Các lần đăng nhập tiếp theo:**
-   - Chọn tên và nhập chính xác mã PIN đã tạo.
-   - Nhấn **"Xác nhận"** để vào hệ thống.
-
----
-
-### 2. Trang Tổng quan (Dashboard)
-Tại trang chủ (`/`):
-- **Thông tin nhiệm vụ:** Xem tiêu đề tuần học, mô tả yêu cầu sản phẩm bàn giao (Slide, Mini-game, Outline, v.v.).
-- **Đồng hồ đếm ngược:** Theo dõi sát sao thời gian còn lại đến hạn chót (Deadline).
-- **Bộ chuyển tuần:** Xem lại lịch sử các tuần trước hoặc chuyển tới tuần học mới nhất.
-- **Tiến độ bầu chọn:** Xem nhanh có bao nhiêu bạn trong nhóm đã chốt vai trò.
-- **Nút hành động:** Nhấn **"Tham gia chọn vai trò ngay"** để chuyển sang trang bình chọn.
-
----
-
-### 3. Bỏ phiếu vai trò (Voting Page)
-Tại trang `/vote`:
-- Danh sách các vai trò cần thiết cho nhiệm vụ được hiển thị dạng thẻ lưới (Grid Card).
-- Mỗi thẻ vai trò hiển thị:
-  - Tên vai trò & Mô tả công việc cụ thể.
-  - Chỉ tiêu số lượng người (`Đã chọn: X / Y`).
-  - Danh sách avatar và tên các bạn đang giữ vị trí đó.
-- **Cách thức chọn:**
-  - Nhấn nút **"Nhận vai trò này"** để đăng ký.
-  - Nếu đã đăng ký và muốn đổi sang vai trò khác: Bạn có thể chọn trực tiếp vai trò mới (hệ thống sẽ tự động chuyển slot) hoặc bấm **"Hủy đăng ký"** để quay về trạng thái chưa chọn.
-  - Khi vai trò đã đủ người (`Full`), nút đăng ký sẽ chuyển sang trạng thái vô hiệu hóa.
-  - Khi quản trị viên đóng cổng biểu quyết, các nút bấm sẽ bị khóa và hiển thị nhãn `Bình chọn đã đóng`.
-
----
-
-### 4. Bảng điều khiển Quản trị viên (Admin Panel)
-*Tính năng độc quyền dành riêng cho tài khoản Quản trị viên: **Đào Đức Minh** (`user_1`)*
-
-Khi đăng nhập bằng tài khoản Admin, trên thanh Header sẽ xuất hiện nút **"Quản trị"** kèm biểu tượng vương miện 👑:
-- **Quản lý nhiệm vụ (Missions):**
-  - Tạo nhiệm vụ tuần mới, nhập tiêu đề, mô tả yêu cầu và chọn hạn chót deadline.
-  - Chuyển đổi nhiệm vụ đang hoạt động (`is_active`).
-- **Quản lý vai trò (Roles):**
-  - Thêm vai trò mới, sửa đổi tên và mô tả vai trò.
-  - Cấu hình số slot giới hạn tối đa (`max_slots`) cho từng vai trò.
-  - Xóa các vai trò không còn cần thiết.
-- **Điều khiển cổng biểu quyết:**
-  - Nút chuyển trạng thái **Mở bình chọn / Khóa bình chọn** nhanh chóng chỉ với 1 click.
-- **Điều phối nhân sự trực tiếp:**
-  - Cho phép Admin kéo/chuyển thành viên bất kỳ vào đúng vai trò trong trường hợp có chỉ định đặc biệt.
-- **Reset biểu quyết:**
-  - Làm trống toàn bộ phiếu bầu của tuần đó để tổ chức chọn lại từ đầu khi có sự thay đổi lớn.
-
----
-
-## 👥 Danh sách thành viên cố định
-
-Hệ thống được thiết kế khép kín dành cho đúng 9 thành viên của Nhóm 1 môn CNXHKH:
-
-| Mã định danh (ID) | Họ và tên thành viên | Tên thường gọi | Vai trò trong hệ sinh thái | Quyền Quản trị |
-| :---: | :--- | :--- | :--- | :---: |
-| `user_1` | **Đào Đức Minh** | Đức Minh | 👑 Trưởng nhóm / Điều hành chính | **Admin (Toàn quyền)** |
-| `user_2` | **Trần Hải Đăng** | Hải Đăng | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_3` | **Nguyễn Văn Nam** | Văn Nam | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_4` | **Bùi Minh Lâm** | Minh Lâm | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_5` | **Nguyễn Viết Ngọc Duy** | Ngọc Duy | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_6` | **Trần Viết Cường** | Viết Cường | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_7` | **Lưu Thế An** | Thế An | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_8` | **Đặng Quốc Khánh** | Quốc Khánh | 👤 Thành viên Nhóm 1 | Thành viên |
-| `user_9` | **Nguyễn Đức Anh** | Đức Anh | 👤 Thành viên Nhóm 1 | Thành viên |
-
----
-
-## 🌐 Hướng dẫn triển khai (Deployment)
-
-### Phương án 1: Triển khai trên Vercel (Khuyên dùng)
-1. Đẩy mã nguồn dự án lên kho lưu trữ GitHub cá nhân hoặc tổ chức.
-2. Truy cập [Vercel Dashboard](https://vercel.com) và chọn **"Add New Project"**.
-3. Nhập kho lưu trữ GitHub chứa dự án `web-cnxh`.
-4. Tại phần **Environment Variables**, khai báo 2 biến môi trường:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-5. Nhấn **Deploy**. Vercel sẽ tự động tối ưu hóa bản build và cung cấp tên miền HTTPS miễn phí tốc độ cao.
-
-### Phương án 2: Tự lưu trữ (Self-hosted Node.js Server)
-Chạy lệnh biên dịch mã nguồn production:
-
-```bash
-# 1. Biên dịch dự án tối ưu hóa
-npm run build
-
-# 2. Khởi động server production tại cổng mặc định 3000
-npm run start
-```
-
-*(Có thể sử dụng PM2 hoặc Docker để quản lý tiến trình nền trên VPS).*
-
----
-
-## 🎨 Hệ thống thiết kế (Design System)
-
-Giao diện ứng dụng tuân thủ nghiêm ngặt bảng màu nhận diện hiện đại, trực quan và đậm chất công nghệ:
-
-| Thành phần | Mã màu Hex | Ý nghĩa & Ứng dụng |
-| :--- | :---: | :--- |
-| **Background** | `#0A0A0F` | Nền tối sâu thẳm, dịu mắt, làm nổi bật các khối nội dung |
-| **Surface** | `#1A1A2E` | Bề mặt các Card, Thẻ vai trò, Modal với hiệu ứng kính mờ Glassmorphism |
-| **Border** | `#2A2A3E` | Đường viền mảnh tinh tế, phân tách các thành phần rõ ràng |
-| **Primary Red** | `#E11D48` | Màu đỏ điểm nhấn thương hiệu (Rose-600), thể hiện tinh thần xung kích |
-| **Accent Gold** | `#F59E0B` | Màu vàng quyền lực tượng trưng cho vương miện Admin, hạn chót deadline |
-| **Text Main** | `#F1F1F1` | Chữ trắng xám sáng rõ, độ tương phản cao, dễ đọc trên nền tối |
+### Hiệu ứng hình ảnh đa tầng (Multi-layer Atmospheric Effects)
+- **Khối cầu Cực quang Hơi thở (Floating Aurora Orbs):** Các quả cầu ánh sáng đỏ Ruby 650px và vàng hoàng gia 550px chuyển động trôi chậm và phập phồng ở các góc màn hình với độ nhòe sâu (`blur-[140px]`).
+- **Chùm sáng vòm đỉnh (Top Cyber Spotlight):** Vệt sáng tỏa rộng 1200px chiếu từ đỉnh trang tạo hiệu ứng sân khấu điện ảnh.
+- **Ma trận lưới vi mạch (Cyber Grid & Dots):** Hệ thống lưới công nghệ 48px với tâm sáng tập trung ở giữa, mờ dần về các góc (`radial-gradient mask`).
+- **Bụi sao Cyber lơ lửng (Floating Particles):** Các hạt photon đỏ và vàng trôi dạt ngẫu nhiên, tự động nhấp nháy tạo bầu không khí sống động.
+- **Glassmorphism cao cấp:** Thẻ nội dung làm mờ nền kính (`backdrop-blur-xl`), viền sáng mảnh phản chiếu ánh neon tinh tế.
 
 ---
 
 ## 📄 Bản quyền & License
 
-Dự án được xây dựng phục vụ nhu cầu học tập và quản trị nội bộ của **Nhóm 1 — Môn học Chủ nghĩa Xã hội Khoa học**.
+Dự án **nhom1cnxh** được phát triển và vận hành phục vụ nội bộ **Nhóm 1 — Môn học Chủ nghĩa Xã hội Khoa học**.
 
-> [!NOTE]
-> Nghiêm cấm phân phối thương mại khi chưa có sự đồng ý của toàn thể thành viên Nhóm 1. Mọi đóng góp cải tiến kỹ thuật vui lòng liên hệ Trưởng nhóm **Đào Đức Minh**.
+> [!IMPORTANT]
+> Toàn bộ bản quyền kiến trúc và giao diện thuộc về Nhóm 1. Mọi thắc mắc và đóng góp kỹ thuật xin vui lòng liên hệ Trưởng nhóm **Đào Đức Minh**.
