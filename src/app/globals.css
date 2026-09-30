@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-surface: #1a1a2e;
+  --bg-surface-light: #242442;
+  --border-color: #2a2a3e;
+  --border-light: #3a3a5e;
+  --red-primary: #E11D48;
+  --red-glow: rgba(225, 29, 72, 0.3);
+  --gold-primary: #F59E0B;
+  --gold-glow: rgba(245, 158, 11, 0.3);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: #f1f1f1;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(26, 26, 46, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-light {
+  background: rgba(36, 36, 66, 0.5);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Neon glow effects */
+.glow-red {
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.3), 0 0 60px rgba(225, 29, 72, 0.1);
+}
+
+.glow-gold {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 0 60px rgba(245, 158, 11, 0.1);
+}
+
+.glow-red-intense {
+  box-shadow: 0 0 30px rgba(225, 29, 72, 0.5), 0 0 80px rgba(225, 29, 72, 0.2);
+}
+
+/* Text glow */
+.text-glow-red {
+  text-shadow: 0 0 10px rgba(225, 29, 72, 0.5), 0 0 40px rgba(225, 29, 72, 0.2);
+}
+
+.text-glow-gold {
+  text-shadow: 0 0 10px rgba(245, 158, 11, 0.5), 0 0 40px rgba(245, 158, 11, 0.2);
+}
+
+/* Neon border animation */
+.neon-border {
+  position: relative;
+}
+
+.neon-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(225, 29, 72, 0.5), transparent, rgba(245, 158, 11, 0.5));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Background grid pattern */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(225, 29, 72, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(225, 29, 72, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2a2a3e;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3a3a5e;
+}
+
+/* Number ticker animation */
+@keyframes tick-up {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-tick-up {
+  animation: tick-up 0.3s ease-out;
+}
+
+/* Pulse dot for live indicator */
+.pulse-dot {
+  position: relative;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: inherit;
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% { transform: scale(1); opacity: 0.5; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* PIN input styling */
+.pin-input {
+  width: 3rem;
+  height: 3.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: rgba(26, 26, 46, 0.8);
+  border: 2px solid #2a2a3e;
+  border-radius: 0.75rem;
+  color: #f1f1f1;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.pin-input:focus {
+  border-color: #E11D48;
+  box-shadow: 0 0 20px rgba(225, 29, 72, 0.3);
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(225, 29, 72, 0.3);
+  color: #fff;
+}
