@@ -10,7 +10,7 @@ import RoleCard from '@/components/RoleCard';
 import VoteProgress from '@/components/VoteProgress';
 import AdminDrawer from '@/components/AdminDrawer';
 import { toast } from 'react-hot-toast';
-import { motion, AnimatePresence, Reorder } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
 export default function VotePage() {
@@ -19,6 +19,10 @@ export default function VotePage() {
   const [activeMissionId, setActiveMissionId] = useState<string | null>(null);
   const [fetchingMission, setFetchingMission] = useState(true);
   const [isAdminDrawerOpen, setIsAdminDrawerOpen] = useState(false);
+
+  // 2D HTML5 Drag and Drop state
+  const [draggedRoleId, setDraggedRoleId] = useState<string | null>(null);
+  const [dragOverRoleId, setDragOverRoleId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -50,11 +54,12 @@ export default function VotePage() {
 
   const {
     roles,
+    setRoles,
     loading: rolesLoading,
     isSyncing,
     mission,
     castVote,
-    reorderRoles,
+    saveRolesOrder,
     moveRolePosition,
     refetch,
   } = useRealtimeVotes(activeMissionId);
@@ -118,10 +123,57 @@ export default function VotePage() {
     }
   };
 
-  // Pure 60fps local reordering - NO toast spamming!
-  const handleReorder = (newOrder: typeof roles) => {
+  // --- 2D HTML5 Drag & Drop handlers (Tracks mouse in 2D across grid columns, ZERO premature timer/toasts) ---
+  const handleDragStart = (roleId: string) => (e: React.DragEvent) => {
     if (!user?.is_admin) return;
-    reorderRoles(newOrder);
+    setDraggedRoleId(roleId);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', roleId);
+  };
+
+  const handleDragOver = (roleId: string) => (e: React.DragEvent) => {
+    if (!user?.is_admin || !draggedRoleId || draggedRoleId === roleId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (dragOverRoleId !== roleId) {
+      setDragOverRoleId(roleId);
+    }
+  };
+
+  const handleDragLeave = (roleId: string) => () => {
+    if (dragOverRoleId === roleId) {
+      setDragOverRoleId(null);
+    }
+  };
+
+  const handleDrop = (targetRoleId: string) => async (e: React.DragEvent) => {
+    e.preventDefault();
+    if (!user?.is_admin || !draggedRoleId || draggedRoleId === targetRoleId) {
+      setDraggedRoleId(null);
+      setDragOverRoleId(null);
+      return;
+    }
+
+    const fromIndex = roles.findIndex((r) => r.id === draggedRoleId);
+    const toIndex = roles.findIndex((r) => r.id === targetRoleId);
+
+    setDraggedRoleId(null);
+    setDragOverRoleId(null);
+
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    // Swap positions
+    const newRoles = [...roles];
+    const [moved] = newRoles.splice(fromIndex, 1);
+    newRoles.splice(toIndex, 0, moved);
+
+    // Save ONCE on drop!
+    await saveRolesOrder(newRoles);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedRoleId(null);
+    setDragOverRoleId(null);
   };
 
   return (
@@ -198,71 +250,40 @@ export default function VotePage() {
           {user?.is_admin && (
             <div className="flex flex-wrap items-center gap-2 text-xs">
               <div className="inline-flex items-center gap-2 bg-[#F59E0B]/10 border border-[#F59E0B]/30 px-3.5 py-2 rounded-xl text-[#F59E0B] font-semibold">
-                <span>💡 Kéo thẻ hoặc bấm mũi tên ◀ ▶ để đổi thứ tự vai trò</span>
+                <span>💡 Giữ icon ⋮⋮ kéo thả vào thẻ khác | Hoặc bấm ◀ ▶ để đổi chỗ</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Roles Grid with Reorder */}
-        {user?.is_admin ? (
-          <Reorder.Group
-            axis="y"
-            values={roles}
-            onReorder={handleReorder}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {roles.map((role, idx) => (
-              <Reorder.Item
-                key={role.id}
-                value={role}
-                className="list-none"
-                whileDrag={{ scale: 1.03, zIndex: 50, boxShadow: '0 25px 50px rgba(0,0,0,0.7)' }}
-              >
-                <RoleCard
-                  role={role}
-                  currentUserId={user?.id || null}
-                  isAdmin={true}
-                  isVotingOpen={mission.is_voting_open}
-                  userCurrentVote={userCurrentVote}
-                  onVote={handleVote}
-                  onRefetch={refetch}
-                  onMoveLeft={() => moveRolePosition(role.id, 'left')}
-                  onMoveRight={() => moveRolePosition(role.id, 'right')}
-                  isFirst={idx === 0}
-                  isLast={idx === roles.length - 1}
-                />
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        ) : (
-          <motion.div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-            }}
-          >
-            {roles.map((role) => (
-              <motion.div
-                key={role.id}
-                variants={{ hidden: { y: 20, opacity: 0 }, visible: { y: 0, opacity: 1 } }}
-              >
-                <RoleCard
-                  role={role}
-                  currentUserId={user?.id || null}
-                  isAdmin={false}
-                  isVotingOpen={mission.is_voting_open}
-                  userCurrentVote={userCurrentVote}
-                  onVote={handleVote}
-                  onRefetch={refetch}
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        )}
+        {/* 2D Responsive Grid - Smooth, Zero Overlap, Perfect Alignment */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {roles.map((role, idx) => (
+            <div key={role.id} className="transition-all duration-200">
+              <RoleCard
+                role={role}
+                currentUserId={user?.id || null}
+                isAdmin={user?.is_admin || false}
+                isVotingOpen={mission.is_voting_open}
+                userCurrentVote={userCurrentVote}
+                onVote={handleVote}
+                onRefetch={refetch}
+                onMoveLeft={() => moveRolePosition(role.id, 'left')}
+                onMoveRight={() => moveRolePosition(role.id, 'right')}
+                isFirst={idx === 0}
+                isLast={idx === roles.length - 1}
+                draggable={user?.is_admin}
+                onDragStart={handleDragStart(role.id)}
+                onDragOver={handleDragOver(role.id)}
+                onDragLeave={handleDragLeave(role.id)}
+                onDrop={handleDrop(role.id)}
+                onDragEnd={handleDragEnd}
+                isDragging={draggedRoleId === role.id}
+                isDragOver={dragOverRoleId === role.id}
+              />
+            </div>
+          ))}
+        </div>
       </main>
 
       {/* Admin Floating Control Drawer Button */}

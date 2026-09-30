@@ -13,8 +13,6 @@ export function useRealtimeVotes(missionId: string | null) {
 
   // Track initial load
   const hasLoadedRef = useRef(false);
-  // Debounce timer for drag-and-drop reordering to prevent spamming DB and toasts
-  const reorderDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const fetchData = useCallback(async (isBackground = false) => {
     if (!missionId) return;
@@ -86,9 +84,6 @@ export function useRealtimeVotes(missionId: string | null) {
 
     return () => {
       supabase.removeChannel(votesChannel);
-      if (reorderDebounceTimer.current) {
-        clearTimeout(reorderDebounceTimer.current);
-      }
     };
   }, [missionId, fetchData]);
 
@@ -137,43 +132,31 @@ export function useRealtimeVotes(missionId: string | null) {
     return !error;
   };
 
-  // Reorder roles by drag-and-drop:
-  // 1. Instant local state update (60fps fluid motion, ZERO lag)
-  // 2. Debounced database save (executes ONCE after dragging stops, ZERO toast spam)
-  const reorderRoles = useCallback((newRoles: RoleWithVotes[]) => {
+  // Save new role order explicitly ON DROP (Only fires once, zero premature notifications, zero lag)
+  const saveRolesOrder = useCallback(async (newRoles: RoleWithVotes[]) => {
     const updated = newRoles.map((r, index) => ({
       ...r,
       order_index: index,
     }));
-    // Instant smooth update
     setRoles(updated);
 
-    // Cancel pending timer
-    if (reorderDebounceTimer.current) {
-      clearTimeout(reorderDebounceTimer.current);
+    try {
+      await Promise.all(
+        updated.map((role) =>
+          supabase
+            .from('roles')
+            .update({ order_index: role.order_index })
+            .eq('id', role.id)
+        )
+      );
+      toast.success('Đã lưu vị trí vai trò mới!', {
+        id: 'role-reorder-saved',
+        duration: 1500,
+      });
+    } catch (err) {
+      console.error('Failed to update roles order:', err);
+      toast.error('Lỗi khi lưu vị trí vai trò', { id: 'role-reorder-saved' });
     }
-
-    // Debounce save to database after user releases drag
-    reorderDebounceTimer.current = setTimeout(async () => {
-      try {
-        await Promise.all(
-          updated.map((role) =>
-            supabase
-              .from('roles')
-              .update({ order_index: role.order_index })
-              .eq('id', role.id)
-          )
-        );
-        // Single unique toast that never stacks or spams
-        toast.success('Đã lưu vị trí vai trò mới!', {
-          id: 'role-reorder-saved',
-          duration: 2000,
-        });
-      } catch (err) {
-        console.error('Failed to update roles order:', err);
-        toast.error('Lỗi khi lưu vị trí vai trò', { id: 'role-reorder-saved' });
-      }
-    }, 600);
   }, []);
 
   // Quick move role left or right by index
@@ -188,18 +171,19 @@ export function useRealtimeVotes(missionId: string | null) {
     newRoles[currentIndex] = newRoles[targetIndex];
     newRoles[targetIndex] = temp;
 
-    reorderRoles(newRoles);
-  }, [roles, reorderRoles]);
+    await saveRolesOrder(newRoles);
+  }, [roles, saveRolesOrder]);
 
   return {
     roles,
+    setRoles,
     loading,
     isSyncing,
     mission,
     castVote,
     removeVote,
     moveUserToRole,
-    reorderRoles,
+    saveRolesOrder,
     moveRolePosition,
     refetch: () => fetchData(true),
   };

@@ -17,11 +17,19 @@ interface RoleCardProps {
   onVote: (roleId: string) => void;
   onAdminMove?: (userId: string, roleId: string) => void;
   onRefetch?: () => void;
-  dragHandleProps?: any;
   onMoveLeft?: () => void;
   onMoveRight?: () => void;
   isFirst?: boolean;
   isLast?: boolean;
+  // Drag and drop props
+  draggable?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDragLeave?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
+  onDragEnd?: (e: React.DragEvent) => void;
+  isDragging?: boolean;
+  isDragOver?: boolean;
 }
 
 export default function RoleCard({
@@ -33,11 +41,18 @@ export default function RoleCard({
   onVote,
   onAdminMove,
   onRefetch,
-  dragHandleProps,
   onMoveLeft,
   onMoveRight,
   isFirst,
   isLast,
+  draggable,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
+  isDragging,
+  isDragOver,
 }: RoleCardProps) {
   const currentCount = role.votes.length;
   const isFull = currentCount >= role.max_slots;
@@ -117,7 +132,7 @@ export default function RoleCard({
               <div className="absolute inset-0 rounded-full ring-2 ring-[#E11D48]/40 animate-pulse pointer-events-none" />
             </div>
 
-            {/* Tooltip full name with smooth blur */}
+            {/* Tooltip full name */}
             <div className="absolute -top-11 left-1/2 transform -translate-x-1/2 bg-[#0e0e1a]/95 text-white text-xs px-2.5 py-1 rounded-lg border border-[#3a3a5e] opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-30 whitespace-nowrap shadow-2xl backdrop-blur-md">
               {vote.user.full_name}
             </div>
@@ -154,11 +169,21 @@ export default function RoleCard({
 
   return (
     <div
+      draggable={draggable && !isEditing}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
       className={cn(
-        "relative rounded-2xl border p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between overflow-hidden",
-        hasUserVotedForThis
-          ? "border-[#F59E0B]/80 bg-gradient-to-br from-[#16162a]/95 via-[#1a1a32]/90 to-[#221c38]/90 shadow-[0_0_30px_rgba(245,158,11,0.15)]"
-          : "border-[#26263e] bg-[#121222]/90 backdrop-blur-xl hover:border-[#E11D48]/60 shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+        "relative rounded-2xl border p-5 sm:p-6 transition-all duration-200 flex flex-col justify-between overflow-hidden",
+        isDragging && "opacity-40 scale-[0.98] border-dashed border-[#E11D48]",
+        isDragOver && "ring-2 ring-[#E11D48] shadow-[0_0_35px_rgba(225,29,72,0.5)] scale-[1.02] border-[#E11D48]",
+        !isDragging && !isDragOver && (
+          hasUserVotedForThis
+            ? "border-[#F59E0B]/80 bg-gradient-to-br from-[#16162a]/95 via-[#1a1a32]/90 to-[#221c38]/90 shadow-[0_0_30px_rgba(245,158,11,0.15)]"
+            : "border-[#26263e] bg-[#121222]/90 backdrop-blur-xl hover:border-[#E11D48]/60 shadow-[0_8px_30px_rgba(0,0,0,0.35)]"
+        )
       )}
     >
       {/* Left glowing border accent */}
@@ -195,11 +220,10 @@ export default function RoleCard({
               <div className="flex-1 flex items-center gap-2">
                 {/* Admin Drag Handle & Position Buttons */}
                 {isAdmin && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     <div
-                      {...dragHandleProps}
                       className="cursor-grab active:cursor-grabbing p-1 text-[#6b6b88] hover:text-[#F59E0B] transition-colors rounded hover:bg-white/5"
-                      title="Giữ và kéo để đổi vị trí"
+                      title="Giữ chuột vào đây để kéo thả đổi vị trí"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16" />
@@ -211,8 +235,8 @@ export default function RoleCard({
                       <button
                         onClick={onMoveLeft}
                         disabled={isFirst}
-                        className="p-1 text-[#6b6b88] hover:text-white disabled:opacity-20 transition-opacity"
-                        title="Di chuyển sang trái"
+                        className="p-1 text-[#6b6b88] hover:text-[#F59E0B] disabled:opacity-20 transition-all rounded hover:bg-white/5"
+                        title="Đổi sang trái"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
@@ -223,8 +247,8 @@ export default function RoleCard({
                       <button
                         onClick={onMoveRight}
                         disabled={isLast}
-                        className="p-1 text-[#6b6b88] hover:text-white disabled:opacity-20 transition-opacity"
-                        title="Di chuyển sang phải"
+                        className="p-1 text-[#6b6b88] hover:text-[#F59E0B] disabled:opacity-20 transition-all rounded hover:bg-white/5"
+                        title="Đổi sang phải"
                       >
                         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
