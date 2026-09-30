@@ -110,16 +110,21 @@ export default function VotePage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-10">
-          <VoteProgress totalMembers={9} votedCount={totalVoted} votedUsers={votedUsers} />
+          <VoteProgress totalMembers={8} votedCount={totalVoted} votedUsers={votedUsers} />
         </div>
 
-        <div className="mb-6 flex justify-between items-end">
+        <div className="mb-6 flex flex-col sm:flex-row justify-between sm:items-end gap-3">
           <div>
             <h2 className="text-2xl font-bold uppercase">Bảng Phân Công</h2>
             <p className="text-[#a0a0b8] mt-1">
-              {!mission.is_voting_open ? 'Hệ thống vote đang tạm khóa.' : 'Hãy chọn một vai trò phù hợp cho tuần này.'}
+              {!mission.is_voting_open ? 'Hệ thống vote đang tạm khóa.' : '8 thành viên tham gia nhận vai trò phù hợp cho tuần này.'}
             </p>
           </div>
+          {user?.is_admin && (
+            <div className="inline-flex items-center gap-2 bg-[#F59E0B]/10 border border-[#F59E0B]/30 px-3.5 py-1.5 rounded-lg text-xs text-[#F59E0B] font-semibold self-start sm:self-auto">
+              <span>👑 Nhóm trưởng: Bạn có quyền bấm "Sửa" trực tiếp trên từng thẻ hoặc mở nút đỏ góc phải</span>
+            </div>
+          )}
         </div>
 
         <motion.div 
@@ -140,6 +145,7 @@ export default function VotePage() {
                 isVotingOpen={mission.is_voting_open}
                 userCurrentVote={userCurrentVote}
                 onVote={handleVote}
+                onRefetch={refetch}
               />
             </motion.div>
           ))}
