@@ -177,7 +177,7 @@ export default function VotePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-[#f1f1f1] pb-28 relative bg-grid selection:bg-[#E11D48]/30">
+    <div className="min-h-screen bg-transparent text-[#f1f1f1] pb-28 relative selection:bg-[#E11D48]/30">
       {/* Floating Sync indicator - replaces black screen reload */}
       <AnimatePresence>
         {isSyncing && (

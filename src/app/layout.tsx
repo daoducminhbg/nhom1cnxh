@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/contexts/AuthContext';
 import ToastProvider from '@/components/ToastProvider';
+import CyberBackground from '@/components/CyberBackground';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="vi" className="dark">
-      <body className="bg-background text-text min-h-screen antialiased bg-grid">
+      <body className="bg-[#07070d] text-text min-h-screen antialiased relative">
+        <CyberBackground />
         <AuthProvider>
           {children}
           <ToastProvider />
