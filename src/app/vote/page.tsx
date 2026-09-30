@@ -55,11 +55,11 @@ export default function VotePage() {
     mission,
     castVote,
     reorderRoles,
+    moveRolePosition,
     refetch,
   } = useRealtimeVotes(activeMissionId);
 
   // ONLY show full-screen loader on initial mount when roles data is not yet available!
-  // Subsequent updates/edits will NOT trigger a full-screen black reload!
   if (isLoading || fetchingMission || (rolesLoading && roles.length === 0)) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex flex-col items-center justify-center gap-4">
@@ -112,18 +112,16 @@ export default function VotePage() {
     }
     const success = await castVote(user.id, roleId);
     if (success) {
-      toast.success('Đã nhận vai trò thành công!');
+      toast.success('Đã nhận vai trò thành công!', { id: 'vote-success' });
     } else {
-      toast.error('Có lỗi xảy ra, vui lòng thử lại!');
+      toast.error('Có lỗi xảy ra, vui lòng thử lại!', { id: 'vote-error' });
     }
   };
 
-  const handleReorder = async (newOrder: typeof roles) => {
+  // Pure 60fps local reordering - NO toast spamming!
+  const handleReorder = (newOrder: typeof roles) => {
     if (!user?.is_admin) return;
-    const success = await reorderRoles(newOrder);
-    if (success) {
-      toast.success('Đã cập nhật thứ tự vai trò!', { duration: 1500 });
-    }
+    reorderRoles(newOrder);
   };
 
   return (
@@ -199,14 +197,14 @@ export default function VotePage() {
 
           {user?.is_admin && (
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <div className="inline-flex items-center gap-2 bg-[#F59E0B]/10 border border-[#F59E0B]/30 px-3 py-2 rounded-xl text-[#F59E0B] font-semibold">
-                <span>💡 Kéo thả thẻ để đổi thứ tự | Bấm "Sửa" trên thẻ để chỉnh chi tiết</span>
+              <div className="inline-flex items-center gap-2 bg-[#F59E0B]/10 border border-[#F59E0B]/30 px-3.5 py-2 rounded-xl text-[#F59E0B] font-semibold">
+                <span>💡 Kéo thẻ hoặc bấm mũi tên ◀ ▶ để đổi thứ tự vai trò</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Roles Reorder Grid */}
+        {/* Roles Grid with Reorder */}
         {user?.is_admin ? (
           <Reorder.Group
             axis="y"
@@ -214,12 +212,12 @@ export default function VotePage() {
             onReorder={handleReorder}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
-            {roles.map((role) => (
+            {roles.map((role, idx) => (
               <Reorder.Item
                 key={role.id}
                 value={role}
                 className="list-none"
-                whileDrag={{ scale: 1.03, zIndex: 50, boxShadow: '0 25px 50px rgba(0,0,0,0.6)' }}
+                whileDrag={{ scale: 1.03, zIndex: 50, boxShadow: '0 25px 50px rgba(0,0,0,0.7)' }}
               >
                 <RoleCard
                   role={role}
@@ -229,6 +227,10 @@ export default function VotePage() {
                   userCurrentVote={userCurrentVote}
                   onVote={handleVote}
                   onRefetch={refetch}
+                  onMoveLeft={() => moveRolePosition(role.id, 'left')}
+                  onMoveRight={() => moveRolePosition(role.id, 'right')}
+                  isFirst={idx === 0}
+                  isLast={idx === roles.length - 1}
                 />
               </Reorder.Item>
             ))}

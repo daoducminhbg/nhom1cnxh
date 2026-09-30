@@ -18,6 +18,10 @@ interface RoleCardProps {
   onAdminMove?: (userId: string, roleId: string) => void;
   onRefetch?: () => void;
   dragHandleProps?: any;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+  isFirst?: boolean;
+  isLast?: boolean;
 }
 
 export default function RoleCard({
@@ -30,6 +34,10 @@ export default function RoleCard({
   onAdminMove,
   onRefetch,
   dragHandleProps,
+  onMoveLeft,
+  onMoveRight,
+  isFirst,
+  isLast,
 }: RoleCardProps) {
   const currentCount = role.votes.length;
   const isFull = currentCount >= role.max_slots;
@@ -62,7 +70,7 @@ export default function RoleCard({
       if (error) {
         toast.error('Lỗi khi cập nhật vai trò');
       } else {
-        toast.success('Đã cập nhật vai trò thành công!');
+        toast.success('Đã cập nhật vai trò thành công!', { id: 'edit-role-success' });
         setIsEditing(false);
         onRefetch?.();
       }
@@ -84,7 +92,7 @@ export default function RoleCard({
     if (error) {
       toast.error('Lỗi khi xóa lượt đăng ký');
     } else {
-      toast.success(`Đã hủy vai trò của ${userName}`);
+      toast.success(`Đã hủy vai trò của ${userName}`, { id: 'kick-member-success' });
       onRefetch?.();
     }
   };
@@ -145,10 +153,7 @@ export default function RoleCard({
   };
 
   return (
-    <motion.div
-      layout
-      transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-      whileHover={!isEditing ? { y: -5, boxShadow: '0 15px 35px -10px rgba(225, 29, 72, 0.25)' } : undefined}
+    <div
       className={cn(
         "relative rounded-2xl border p-5 sm:p-6 transition-all duration-300 flex flex-col justify-between overflow-hidden",
         hasUserVotedForThis
@@ -188,19 +193,48 @@ export default function RoleCard({
           ) : (
             <>
               <div className="flex-1 flex items-center gap-2">
-                {/* Admin Drag Handle */}
+                {/* Admin Drag Handle & Position Buttons */}
                 {isAdmin && (
-                  <div
-                    {...dragHandleProps}
-                    className="cursor-grab active:cursor-grabbing p-1 text-[#6b6b88] hover:text-[#F59E0B] transition-colors rounded hover:bg-white/5"
-                    title="Kéo thả để đổi vị trí"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16" />
-                    </svg>
+                  <div className="flex items-center gap-1">
+                    <div
+                      {...dragHandleProps}
+                      className="cursor-grab active:cursor-grabbing p-1 text-[#6b6b88] hover:text-[#F59E0B] transition-colors rounded hover:bg-white/5"
+                      title="Giữ và kéo để đổi vị trí"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 8h16M4 16h16" />
+                      </svg>
+                    </div>
+
+                    {/* Quick shift buttons for Admin */}
+                    {onMoveLeft && (
+                      <button
+                        onClick={onMoveLeft}
+                        disabled={isFirst}
+                        className="p-1 text-[#6b6b88] hover:text-white disabled:opacity-20 transition-opacity"
+                        title="Di chuyển sang trái"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                    )}
+                    {onMoveRight && (
+                      <button
+                        onClick={onMoveRight}
+                        disabled={isLast}
+                        className="p-1 text-[#6b6b88] hover:text-white disabled:opacity-20 transition-opacity"
+                        title="Di chuyển sang phải"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    )}
                   </div>
                 )}
-                <h3 className="text-xl font-black text-white tracking-tight leading-snug group-hover:text-glow-red transition-all">
+
+                <h3 className="text-xl font-black text-white tracking-tight leading-snug">
                   {role.title}
                 </h3>
               </div>
@@ -381,6 +415,6 @@ export default function RoleCard({
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }

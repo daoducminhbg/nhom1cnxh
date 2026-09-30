@@ -3,19 +3,22 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Vote, Role, User, RoleWithVotes, Mission } from '@/lib/types';
+import toast from 'react-hot-toast';
 
 export function useRealtimeVotes(missionId: string | null) {
   const [roles, setRoles] = useState<RoleWithVotes[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [mission, setMission] = useState<Mission | null>(null);
-  
-  // Track whether initial load has happened
+
+  // Track initial load
   const hasLoadedRef = useRef(false);
+  // Debounce timer for drag-and-drop reordering to prevent spamming DB and toasts
+  const reorderDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
   const fetchData = useCallback(async (isBackground = false) => {
     if (!missionId) return;
-    
+
     // Only show full loading if we haven't loaded data yet
     if (!hasLoadedRef.current && !isBackground) {
       setLoading(true);
@@ -24,7 +27,6 @@ export function useRealtimeVotes(missionId: string | null) {
     }
 
     try {
-      // Fetch mission, roles, votes, users in parallel
       const [missionRes, rolesRes, votesRes, usersRes] = await Promise.all([
         supabase.from('missions').select('*').eq('id', missionId).single(),
         supabase.from('roles').select('*').eq('mission_id', missionId).order('order_index'),
@@ -38,7 +40,7 @@ export function useRealtimeVotes(missionId: string | null) {
       const votes = (votesRes.data || []) as Vote[];
       const rolesList = (rolesRes.data || []) as Role[];
 
-      // Combine roles with their votes and user info
+      // Combine roles with votes and user info
       const rolesWithVotes: RoleWithVotes[] = rolesList.map((role) => ({
         ...role,
         votes: votes
@@ -62,7 +64,7 @@ export function useRealtimeVotes(missionId: string | null) {
 
     if (!missionId) return;
 
-    // Subscribe to realtime changes on votes, roles, missions
+    // Realtime channel for instant multi-user synchronization
     const votesChannel = supabase
       .channel(`realtime-channel-${missionId}`)
       .on(
@@ -84,21 +86,22 @@ export function useRealtimeVotes(missionId: string | null) {
 
     return () => {
       supabase.removeChannel(votesChannel);
+      if (reorderDebounceTimer.current) {
+        clearTimeout(reorderDebounceTimer.current);
+      }
     };
   }, [missionId, fetchData]);
 
   const castVote = async (userId: string, roleId: string): Promise<boolean> => {
     if (!missionId) return false;
     setIsSyncing(true);
-    
-    // Delete existing vote for this user in this mission
+
     await supabase
       .from('votes')
       .delete()
       .eq('mission_id', missionId)
       .eq('user_id', userId);
 
-    // Insert new vote
     const { error } = await supabase
       .from('votes')
       .insert({ mission_id: missionId, user_id: userId, role_id: roleId });
@@ -134,32 +137,59 @@ export function useRealtimeVotes(missionId: string | null) {
     return !error;
   };
 
-  // Reorder roles by drag-and-drop
-  const reorderRoles = async (newRoles: RoleWithVotes[]): Promise<boolean> => {
-    // Instant optimistic update with smooth spring
+  // Reorder roles by drag-and-drop:
+  // 1. Instant local state update (60fps fluid motion, ZERO lag)
+  // 2. Debounced database save (executes ONCE after dragging stops, ZERO toast spam)
+  const reorderRoles = useCallback((newRoles: RoleWithVotes[]) => {
     const updated = newRoles.map((r, index) => ({
       ...r,
       order_index: index,
     }));
+    // Instant smooth update
     setRoles(updated);
 
-    try {
-      // Update order_index in Supabase in background
-      await Promise.all(
-        updated.map((role) =>
-          supabase
-            .from('roles')
-            .update({ order_index: role.order_index })
-            .eq('id', role.id)
-        )
-      );
-      return true;
-    } catch (err) {
-      console.error('Failed to update roles order:', err);
-      await fetchData(true);
-      return false;
+    // Cancel pending timer
+    if (reorderDebounceTimer.current) {
+      clearTimeout(reorderDebounceTimer.current);
     }
-  };
+
+    // Debounce save to database after user releases drag
+    reorderDebounceTimer.current = setTimeout(async () => {
+      try {
+        await Promise.all(
+          updated.map((role) =>
+            supabase
+              .from('roles')
+              .update({ order_index: role.order_index })
+              .eq('id', role.id)
+          )
+        );
+        // Single unique toast that never stacks or spams
+        toast.success('Đã lưu vị trí vai trò mới!', {
+          id: 'role-reorder-saved',
+          duration: 2000,
+        });
+      } catch (err) {
+        console.error('Failed to update roles order:', err);
+        toast.error('Lỗi khi lưu vị trí vai trò', { id: 'role-reorder-saved' });
+      }
+    }, 600);
+  }, []);
+
+  // Quick move role left or right by index
+  const moveRolePosition = useCallback(async (roleId: string, direction: 'left' | 'right') => {
+    const currentIndex = roles.findIndex((r) => r.id === roleId);
+    if (currentIndex === -1) return;
+    const targetIndex = direction === 'left' ? currentIndex - 1 : currentIndex + 1;
+    if (targetIndex < 0 || targetIndex >= roles.length) return;
+
+    const newRoles = [...roles];
+    const temp = newRoles[currentIndex];
+    newRoles[currentIndex] = newRoles[targetIndex];
+    newRoles[targetIndex] = temp;
+
+    reorderRoles(newRoles);
+  }, [roles, reorderRoles]);
 
   return {
     roles,
@@ -170,6 +200,7 @@ export function useRealtimeVotes(missionId: string | null) {
     removeVote,
     moveUserToRole,
     reorderRoles,
+    moveRolePosition,
     refetch: () => fetchData(true),
   };
 }
