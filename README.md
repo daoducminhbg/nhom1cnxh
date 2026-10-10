@@ -56,6 +56,22 @@ Hệ thống số hóa toàn diện quy trình giao nhận bài tập nhóm, gi�
 
 ---
 
+## 🚀 Nhiệm vụ đang triển khai: TUẦN 5 — LIÊN MINH GIAI CẤP
+
+- **Nhiệm vụ:** Thiết kế sản phẩm Infographic học thuật về liên minh giai cấp (tính tất yếu, nội dung, nguyên tắc...).
+- **Web tương tác số hóa:** [https://cnxh-week5-nhom1.vercel.app/](https://cnxh-week5-nhom1.vercel.app/)
+- **Hạn nộp sản phẩm (Deadline):** **Trước 17:00 ngày 12/10/2026**
+- **Cơ cấu 7 vai trò chuyên biệt (8 slots):**
+  1. `Xuất file Infographic Master (Ảnh PNG 4K & PDF in ấn)` — 1 slot
+  2. `Soát lỗi học thuật & Chuẩn hóa thuật ngữ` — 1 slot
+  3. `Viết bản Thuyết minh học thuật (1 - 2 trang A4 Docs)` — 2 slots (2 người cùng làm)
+  4. `QA & Test tương tác đa thiết bị` — 1 slot
+  5. `Quay video Teaser / Screen Record Showcase (30 - 45s)` — 1 slot
+  6. `Tạo QR Code Hub & Đóng gói Poster bìa` — 1 slot
+  7. `Soạn kịch bản thuyết trình 2 phút & Nộp Padlet` — 1 slot
+
+---
+
 ## ⚡ Tính năng hệ thống
 
 ### 1. Cơ chế quản lý đa tuần (Multi-week Architecture)
