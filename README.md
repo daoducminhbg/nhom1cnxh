@@ -56,19 +56,19 @@ Hệ thống số hóa toàn diện quy trình giao nhận bài tập nhóm, gi�
 
 ---
 
-## 🚀 Nhiệm vụ đang triển khai: TUẦN 5 — LIÊN MINH GIAI CẤP
+## 🚀 Nhiệm vụ đang triển khai: TUẦN 6 — DÂN TỘC, TÔN GIÁO & GIA ĐÌNH TRONG TIẾN TRÌNH XÂY DỰNG CNXH
 
-- **Nhiệm vụ:** Thiết kế sản phẩm Infographic học thuật về liên minh giai cấp (tính tất yếu, nội dung, nguyên tắc...).
-- **Web tương tác số hóa:** [https://cnxh-week5-nhom1.vercel.app/](https://cnxh-week5-nhom1.vercel.app/)
-- **Hạn nộp sản phẩm (Deadline):** **Trước 17:00 ngày 12/10/2026**
-- **Cơ cấu 7 vai trò chuyên biệt (8 slots):**
-  1. `Xuất file Infographic Master (Ảnh PNG 4K & PDF in ấn)` — 1 slot
-  2. `Soát lỗi học thuật & Chuẩn hóa thuật ngữ` — 1 slot
-  3. `Viết bản Thuyết minh học thuật (1 - 2 trang A4 Docs)` — 2 slots (2 người cùng làm)
-  4. `QA & Test tương tác đa thiết bị` — 1 slot
-  5. `Quay video Teaser / Screen Record Showcase (30 - 45s)` — 1 slot
-  6. `Tạo QR Code Hub & Đóng gói Poster bìa` — 1 slot
-  7. `Soạn kịch bản thuyết trình 2 phút & Nộp Padlet` — 1 slot
+- **Nhiệm vụ:** Xây dựng 1 video kịch hoàn chỉnh (nhóm tự xây dựng kịch bản, diễn viên, đạo cụ phục trang, lồng tiếng, âm thanh, dung lượng tối thiểu 15 phút).
+- **Hạn nộp sản phẩm (Deadline):** **Trước 17:00 ngày 26/10/2026** (2 tuần thực hiện).
+- **Cơ cấu 8 vai diễn cho 8 thành viên (Mỗi vai 1 slot):**
+  1. `[VAI 1] – Anh Họ Cả` (Host phòng họp / Kỹ sư IT & Người dẫn chuyện) — 1 slot
+  2. `[VAI 2] – Ông Bố` (Gia trưởng, nghiêm khắc, nặng tư tưởng truyền thống) — 1 slot
+  3. `[VAI 3] – Người Con Trai` (Kỹ sư trẻ làm việc xa nhà) — 1 slot
+  4. `[VAI 4] – Anh Trai Nhà Gái` (Y’Duy – Trí thức trẻ người Ê-đê, theo đạo Tin Lành) — 1 slot
+  5. `[VAI 5] – Chú Bảy` (Ông chú họ cả tin, mê tín) — 1 slot
+  6. `[VAI 6] – "Thầy" Huyền Thông` (Thầy bói online trục lợi) — 1 slot
+  7. `[VAI 7] – Chú Tư` (Cán bộ Ủy ban Mặt trận Tổ quốc xã) — 1 slot
+  8. `[VAI 8] – Bác Cả Trưởng Tộc` (Người giữ gia phả dòng họ) — 1 slot
 
 ---
 
